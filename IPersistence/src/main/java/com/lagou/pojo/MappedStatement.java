@@ -1,5 +1,7 @@
 package com.lagou.pojo;
 
+import com.lagou.enumer.SqlMethodEnum;
+
 public class MappedStatement {
 
     //id标识
@@ -10,6 +12,17 @@ public class MappedStatement {
     private String paramterType;
     //sql语句
     private String sql;
+    //sql方法
+    private SqlMethodEnum sqlMethodEnum;
+
+
+    public SqlMethodEnum getSqlMethodEnum() {
+        return sqlMethodEnum;
+    }
+
+    public void setSqlMethodEnum(SqlMethodEnum sqlMethodEnum) {
+        this.sqlMethodEnum = sqlMethodEnum;
+    }
 
     public String getId() {
         return id;

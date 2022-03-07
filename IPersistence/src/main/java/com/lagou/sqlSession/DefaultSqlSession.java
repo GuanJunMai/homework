@@ -5,7 +5,6 @@ import com.lagou.pojo.MappedStatement;
 
 import java.lang.reflect.*;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class DefaultSqlSession implements SqlSession {
 
@@ -29,9 +28,9 @@ public class DefaultSqlSession implements SqlSession {
     @Override
     public <T> T selectOne(String statementid, Object... params) throws Exception {
         List<Object> objects = selectList(statementid, params);
-        if(objects.size()==1){
+        if (objects.size() == 1) {
             return (T) objects.get(0);
-        }else {
+        } else {
             throw new RuntimeException("查询结果为空或者返回结果过多");
         }
 
@@ -39,9 +38,22 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
+    public void delete(String statementid, Object... params) throws Exception {
+        SimpleExecutor simpleExecutor = new SimpleExecutor();
+        MappedStatement mappedStatement = configuration.getMappedStatementMap().get(statementid);
+        simpleExecutor.delete(configuration, mappedStatement, params);
+    }
+
+    @Override
+    public void update(String statementid, Object... params) throws Exception {
+        SimpleExecutor simpleExecutor = new SimpleExecutor();
+        MappedStatement mappedStatement = configuration.getMappedStatementMap().get(statementid);
+        simpleExecutor.update(configuration, mappedStatement, params);
+    }
+
+    @Override
     public <T> T getMapper(Class<?> mapperClass) {
         // 使用JDK动态代理来为Dao接口生成代理对象，并返回
-
         Object proxyInstance = Proxy.newProxyInstance(DefaultSqlSession.class.getClassLoader(), new Class[]{mapperClass}, new InvocationHandler() {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -51,21 +63,34 @@ public class DefaultSqlSession implements SqlSession {
                 String methodName = method.getName();
                 String className = method.getDeclaringClass().getName();
 
-                String statementId = className+"."+methodName;
-                // 准备参数2：params:args
-                // 获取被调用方法的返回值类型
-                Type genericReturnType = method.getGenericReturnType();
-                // 判断是否进行了 泛型类型参数化
-                if(genericReturnType instanceof ParameterizedType){
-                    List<Object> objects = selectList(statementId, args);
-                    return objects;
+                String statementId = className + "." + methodName;
+
+                MappedStatement mappedStatement = configuration.getMappedStatementMap().get(statementId);
+                switch (mappedStatement.getSqlMethodEnum()) {
+                    case SELECT:
+                        // 准备参数2：params:args
+                        // 获取被调用方法的返回值类型
+                        Type genericReturnType = method.getGenericReturnType();
+                        // 判断是否进行了 泛型类型参数化
+                        if (genericReturnType instanceof ParameterizedType) {
+                            List<Object> objects = selectList(statementId, args);
+                            return objects;
+                        }
+                        return selectOne(statementId, args);
+                    case UPDATE:
+                        System.out.println("UPDATE method:" + mappedStatement.getSqlMethodEnum());
+                        update(statementId, args);
+                        return true;
+                    case DELETE:
+                        System.out.println("DELETE method:" + mappedStatement.getSqlMethodEnum());
+                        delete(statementId, args);
+                        return true;
+                    default:
+                        System.out.println("default method:" + mappedStatement.getSqlMethodEnum());
+                        return false;
                 }
-
-                return selectOne(statementId,args);
-
             }
         });
-
         return (T) proxyInstance;
     }
 
