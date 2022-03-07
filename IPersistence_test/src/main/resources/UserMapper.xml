@@ -9,6 +9,10 @@
         select * from user where id = #{id} and username = #{username}
     </select>
 
+    <insert id="insertUser" paramterType="com.lagou.pojo.User">
+        insert into user values(#{id}, #{username})
+    </insert>
+
     <update id="updateUserNameById" paramterType="com.lagou.pojo.User">
         update user set username = #{username} where id = #{id}
     </update>
@@ -16,5 +20,4 @@
     <delete id="deleteUserById" paramterType="com.lagou.pojo.User">
         delete from user where id = #{id}
     </delete>
-
 </mapper>

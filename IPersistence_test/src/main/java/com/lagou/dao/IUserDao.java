@@ -10,6 +10,8 @@ public interface IUserDao {
 
     User findByCondition(User user) throws Exception;
 
+    void insertUser(User user) throws Exception;
+
     void updateUserNameById(User user) throws Exception;
 
     void deleteUserById(User user) throws Exception;

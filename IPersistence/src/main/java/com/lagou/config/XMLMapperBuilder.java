@@ -35,6 +35,10 @@ public class XMLMapperBuilder {
         for (Element element : deleteList) {
             putMappedStatement(namespace, element, SqlMethodEnum.DELETE);
         }
+        List<Element> insertList = rootElement.selectNodes("//insert");
+        for (Element element : insertList) {
+            putMappedStatement(namespace, element, SqlMethodEnum.INSERT);
+        }
     }
 
     private void putMappedStatement(String namespace, Element element, SqlMethodEnum sqlMethodEnum) {

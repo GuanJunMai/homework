@@ -38,17 +38,10 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
-    public void delete(String statementid, Object... params) throws Exception {
+    public void executeUpdate(String statementid, Object... params) throws Exception {
         SimpleExecutor simpleExecutor = new SimpleExecutor();
         MappedStatement mappedStatement = configuration.getMappedStatementMap().get(statementid);
-        simpleExecutor.delete(configuration, mappedStatement, params);
-    }
-
-    @Override
-    public void update(String statementid, Object... params) throws Exception {
-        SimpleExecutor simpleExecutor = new SimpleExecutor();
-        MappedStatement mappedStatement = configuration.getMappedStatementMap().get(statementid);
-        simpleExecutor.update(configuration, mappedStatement, params);
+        simpleExecutor.executeUpdate(configuration, mappedStatement, params);
     }
 
     @Override
@@ -77,13 +70,11 @@ public class DefaultSqlSession implements SqlSession {
                             return objects;
                         }
                         return selectOne(statementId, args);
+                    case INSERT:
                     case UPDATE:
-                        System.out.println("UPDATE method:" + mappedStatement.getSqlMethodEnum());
-                        update(statementId, args);
-                        return true;
                     case DELETE:
-                        System.out.println("DELETE method:" + mappedStatement.getSqlMethodEnum());
-                        delete(statementId, args);
+                        System.out.println("executeUpdate method:" + mappedStatement.getSqlMethodEnum());
+                        executeUpdate(statementId, args);
                         return true;
                     default:
                         System.out.println("default method:" + mappedStatement.getSqlMethodEnum());
