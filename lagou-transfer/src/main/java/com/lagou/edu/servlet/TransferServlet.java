@@ -1,6 +1,7 @@
 package com.lagou.edu.servlet;
 
 import com.lagou.edu.factory.BeanFactory;
+import com.lagou.edu.factory.ProxyFactory;
 import com.lagou.edu.pojo.Result;
 import com.lagou.edu.service.TransferService;
 import com.lagou.edu.utils.JsonUtils;
@@ -21,8 +22,6 @@ public class TransferServlet extends HttpServlet {
     private TransferService transferService = (TransferService) BeanFactory.getBean("com.lagou.edu.service.TransferService");
 
     // 首先从BeanFactory获取到proxyFactory代理工厂的实例化对象
-//    private ProxyFactory proxyFactory = (ProxyFactory) BeanFactory.getBean("proxyFactory");
-//    private TransferService transferService = (TransferService) proxyFactory.getJdkProxy(BeanFactory.getBean("transferService")) ;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
